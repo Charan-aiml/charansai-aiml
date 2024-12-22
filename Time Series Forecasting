@@ -1,0 +1,55 @@
+import org.apache.commons.math3.analysis.function.Linear;
+import weka.core.Instances;
+import weka.core.Attribute;
+import weka.core.DenseInstance;
+import weka.core.Instance;
+import weka.classifiers.functions.LinearRegression;
+import weka.classifiers.Classifier;
+
+public class TimeSeriesForecasting {
+
+    public static void main(String[] args) throws Exception {
+        // Step 1: Create a dataset for time series data
+        // In this case, we're using a simple dataset where x is the time and y is the value to be predicted
+        int size = 10;  // Number of data points
+        double[][] data = new double[size][2];  // 2D array (time, value)
+        
+        // Fill the data array with time series values (for example, a simple increasing sequence)
+        for (int i = 0; i < size; i++) {
+            data[i][0] = i;  // Time (e.g., days, months, etc.)
+            data[i][1] = 2 * i + 1;  // Some simple linear pattern (y = 2x + 1)
+        }
+        
+        // Step 2: Create attributes for the dataset
+        Attribute timeAttribute = new Attribute("Time");
+        Attribute valueAttribute = new Attribute("Value");
+        
+        // Create a list of attributes
+        ArrayList<Attribute> attributes = new ArrayList<>();
+        attributes.add(timeAttribute);
+        attributes.add(valueAttribute);
+        
+        // Step 3: Create an Instances object to hold the dataset
+        Instances dataset = new Instances("TimeSeriesData", attributes, size);
+        
+        // Step 4: Add the data to the dataset
+        for (int i = 0; i < size; i++) {
+            Instance instance = new DenseInstance(2);
+            instance.setValue(timeAttribute, data[i][0]);
+            instance.setValue(valueAttribute, data[i][1]);
+            dataset.add(instance);
+        }
+        
+        // Step 5: Train a Linear Regression model on the data
+        LinearRegression model = new LinearRegression();
+        model.buildClassifier(dataset);
+        
+        // Step 6: Make a forecast (predict the next value for time t = 10)
+        Instance forecastInstance = new DenseInstance(2);
+        forecastInstance.setValue(timeAttribute, 10);  // Predict for time t = 10
+        double forecast = model.classifyInstance(forecastInstance);
+        
+        // Step 7: Output the forecasted value
+        System.out.println("Forecasted value for time t = 10: " + forecast);
+    }
+}
